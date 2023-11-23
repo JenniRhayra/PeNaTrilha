@@ -6,9 +6,7 @@ export class RefreshTokenController {
   constructor(private refreshTokenUseCase: RefreshTokenUseCase) {}
 
   async handle(request: FastifyRequest, reply: FastifyReply) {
-    const { refreshToken } = request.body as {
-      refreshToken: string
-    }
+    const refreshToken = request.headers.authorization.replace(/^Bearer\s/, '')
 
     const token = await this.refreshTokenUseCase.execute(refreshToken)
 

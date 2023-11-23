@@ -1,7 +1,7 @@
 import { hash } from 'bcryptjs'
-import { User } from '../../../entities/User'
-import { ICreateUserDTO } from '../DTO/ICreateUserDTO'
-import IUserRepository from '../repositories/IUserRepository'
+import { User } from '../../../../entities/User'
+import { ICreateUserDTO } from '../../DTO/ICreateUserDTO'
+import IUserRepository from '../../repositories/IUserRepository'
 
 export class CreateUserUseCase {
   // eslint-disable-next-line no-useless-constructor
