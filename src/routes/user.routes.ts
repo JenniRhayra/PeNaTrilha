@@ -12,11 +12,11 @@ export default async function (fastify: FastifyInstance) {
     listUserController.handle(request, reply)
   })
 
-  fastify.delete(
-    '/:user_id',
-    (request: FastifyRequest, reply: FastifyReply) => {
-      const { user_id } = request.params
-      deleteUserController.handle(request, reply, user_id)
-    },
-  )
+  // fastify.delete(
+  //   '/:user_id',
+  //   (request: FastifyRequest, reply: FastifyReply) => {
+  //     const { user_id } = request.params
+  //     deleteUserController.handle(request, reply, user_id)
+  //   },
+  // )
 }

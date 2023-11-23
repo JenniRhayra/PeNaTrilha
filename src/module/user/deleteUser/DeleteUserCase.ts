@@ -9,11 +9,11 @@ export class DeleteUserUseCase {
   constructor(private userRepository: IUserRepository) {}
 
   async execute(data: IDeleteUserDTO): Promise<void> {
-    const userAlreadyExist = await this.userRepository.findById(data.id)
-    if (userAlreadyExist === null) {
-      throw new Error('Usuário não existe!')
-    }
+    // const userAlreadyExist = await this.userRepository.findById(data.id)
+    // if (userAlreadyExist === null) {
+    //   throw new Error('Usuário não existe!')
+    // }
 
-    await this.userRepository.delete(userAlreadyExist)  
+    // await this.userRepository.delete(userAlreadyExist)  
   }
 }

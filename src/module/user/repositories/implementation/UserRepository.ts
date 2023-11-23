@@ -43,20 +43,4 @@ export class UserRepository implements IUserRepository {
     })
   }
 
-  async findById(id: string): Promise<User | null> {
-    return await prisma.user.findFirst({
-      where: {
-        id,
-      },
-    })
-  }
-
-  async delete(user: IDeleteUserDTO): Promise<void> {
-    await prisma.user.delete({
-      where: {
-        id : user.id
-      },
-    })
-  }
-
 }
