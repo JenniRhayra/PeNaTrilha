@@ -1,6 +1,7 @@
 import { User } from '@prisma/client'
 import { prisma } from '../../../../lib/prisma'
 import { ICreateUserDTO } from '../../DTO/ICreateUserDTO'
+import { IDeleteUserDTO } from '../../DTO/IDeleteUserDTO'
 import IUserRepository from '../IUserRepository'
 
 export class UserRepository implements IUserRepository {
@@ -17,4 +18,21 @@ export class UserRepository implements IUserRepository {
       data: user,
     })
   }
+
+  async findById(id: string): Promise<User | null> {
+    return await prisma.user.findFirst({
+      where: {
+        id,
+      },
+    })
+  }
+
+  async delete(user: IDeleteUserDTO): Promise<void> {
+    await prisma.user.delete({
+      where: {
+        id : user.id
+      },
+    })
+  }
+
 }
