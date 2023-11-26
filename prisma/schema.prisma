@@ -9,8 +9,8 @@ datasource db {
 
 model User {
   id           String         @id @default(uuid())
-  name         String
   email        String
+  group        String         @default("")
   password     String
   RefreshToken RefreshToken[]
 }
