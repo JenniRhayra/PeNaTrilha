@@ -25,6 +25,7 @@
     "bcryptjs": "^2.4.3",
     "dayjs": "^1.11.10",
     "fastify": "^4.24.3",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "next": "^14.0.3"
   }
 }
