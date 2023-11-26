@@ -15,7 +15,7 @@ export class CreateUserController {
       password: string
     }
 
-    console.log(JSON.parse(request.body))
+    // console.log(JSON.parse(request.body))
 
     try {
       const user = await this.createUserUseCase.execute({

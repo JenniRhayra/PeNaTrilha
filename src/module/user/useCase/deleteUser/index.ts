@@ -1,6 +1,6 @@
-import { UserRepository } from "../../repositories/implementation/UserRepository";
-import { DeleteUserController } from "./DeleteUserController";
-import { DeleteUserUseCase } from "./DeleteUserUseCase";
+import { UserRepository } from '../../repositories/implementation/UserRepository'
+import { DeleteUserController } from './DeleteUserController'
+import { DeleteUserUseCase } from './DeleteUserUseCase'
 
 const userRepository = new UserRepository()
 const deleteUserUseCase = new DeleteUserUseCase(userRepository)
