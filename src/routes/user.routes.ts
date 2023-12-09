@@ -1,7 +1,8 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { createUserController } from '../module/user/useCase/createUser'
 import { listUserController } from '../module/user/useCase/listUser'
 import { deleteUserController } from '../module/user/useCase/deleteUser'
+import { alterUserController } from '../module/user/useCase/AlterUser'
 
 export default async function (fastify: FastifyInstance) {
   fastify.post(
@@ -13,6 +14,10 @@ export default async function (fastify: FastifyInstance) {
 
   fastify.get('/', (request: FastifyRequest, reply: FastifyReply) => {
     listUserController.handle(request, reply)
+  })
+
+  fastify.put('/alterUser', (request: FastifyRequest, reply: FastifyReply) => {
+    alterUserController.handle(request, reply)
   })
 
   fastify.delete(

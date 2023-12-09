@@ -1,7 +1,6 @@
 import { User } from '@prisma/client'
 import { prisma } from '../../../../lib/prisma'
 import { ICreateUserDTO } from '../../DTO/ICreateUserDTO'
-import { IDeleteUserDTO } from '../../DTO/IDeleteUserDTO'
 import IUserRepository from '../IUserRepository'
 
 export class UserRepository implements IUserRepository {
@@ -43,4 +42,10 @@ export class UserRepository implements IUserRepository {
     })
   }
 
+  async save(user: User): Promise<void> {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: user,
+    })
+  }
 }
