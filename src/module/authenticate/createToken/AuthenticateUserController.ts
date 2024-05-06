@@ -11,8 +11,7 @@ export class AuthenticateUserController {
   ): Promise<FastifyReply> {
     const { email, password } = JSON.parse(request.body) as {
       email: string
-      pas
-      sword: string
+      password: string
     }
     try {
 
