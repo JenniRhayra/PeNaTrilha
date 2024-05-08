@@ -1,8 +1,8 @@
 import { compare } from 'bcryptjs'
-import { UserRepository } from '../../user/repositories/implementation/UserRepository'
-import { GenerateRefreshToken } from '../../../provider/GenerateRefreshToken'
-import { GenerateTokenProvider } from '../../../provider/GenerateTokenProvider'
-import { AuthenticateRepository } from '../repositories/implementation/AuthenticateRepository'
+import { UserRepository } from '../../../user/repositories/implementation/UserRepository'
+import { GenerateRefreshToken } from '../../../../provider/GenerateRefreshToken'
+import { GenerateTokenProvider } from '../../../../provider/GenerateTokenProvider'
+import { AuthenticateRepository } from '../../repositories/implementation/AuthenticateRepository'
 
 interface IRequest {
   email: string
@@ -25,7 +25,7 @@ export class AuthenticateUserUseCase {
 
   async execute({ email, password }: IRequest): Promise<IReponse> {
     const userAlreadyExist = await this.useRepository.findByEmail(email)
-    
+
     if (!userAlreadyExist) {
       throw new Error('Usuário ou senha incorreta.')
     }
@@ -43,7 +43,7 @@ export class AuthenticateUserUseCase {
     const refreshToken = await this.generateRefreshToken.execute(
       userAlreadyExist.id,
     )
-    
+
     return { token, refreshToken }
   }
 }

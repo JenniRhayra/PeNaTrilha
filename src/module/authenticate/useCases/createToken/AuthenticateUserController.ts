@@ -9,13 +9,8 @@ export class AuthenticateUserController {
     request: FastifyRequest,
     reply: FastifyReply,
   ): Promise<FastifyReply> {
-    const { email, password } = JSON.parse(request.body) as {
-      email: string
-      pas
-      sword: string
-    }
+    const { email, password } = request.body
     try {
-
       const token = await this.authenticateUserUseCase.execute({
         email,
         password,
