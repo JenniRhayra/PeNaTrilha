@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-constructor */
 import dayjs from 'dayjs'
-import { GenerateTokenProvider } from '../../../provider/GenerateTokenProvider'
-import { AuthenticateRepository } from '../repositories/implementation/AuthenticateRepository'
+import { GenerateTokenProvider } from '../../../../provider/GenerateTokenProvider'
+import { AuthenticateRepository } from '../../repositories/implementation/AuthenticateRepository'
 
 interface IReponse {
   token: string

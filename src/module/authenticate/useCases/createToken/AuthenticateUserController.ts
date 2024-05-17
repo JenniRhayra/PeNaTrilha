@@ -14,7 +14,6 @@ export class AuthenticateUserController {
       password: string
     }
     try {
-
       const token = await this.authenticateUserUseCase.execute({
         email,
         password,

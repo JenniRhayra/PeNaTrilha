@@ -1,5 +1,5 @@
-import { GenerateTokenProvider } from '../../../provider/GenerateTokenProvider'
-import { AuthenticateRepository } from '../repositories/implementation/AuthenticateRepository'
+import { GenerateTokenProvider } from '../../../../provider/GenerateTokenProvider'
+import { AuthenticateRepository } from '../../repositories/implementation/AuthenticateRepository'
 import { RefreshTokenController } from './RefreshTokenController'
 import { RefreshTokenUseCase } from './RefreshTokenUseCase'
 

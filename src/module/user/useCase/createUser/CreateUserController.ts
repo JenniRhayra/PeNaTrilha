@@ -9,18 +9,12 @@ export class CreateUserController {
     request: FastifyRequest,
     reply: FastifyReply,
   ): Promise<FastifyReply> {
-    const { email, password, group } = JSON.parse(request.body) as {
-      email: string
-      group: string
-      password: string
-    }
-
-    // console.log(JSON.parse(request.body))
+    const { email, password, groupId } = request.body
 
     try {
       const user = await this.createUserUseCase.execute({
         email,
-        group,
+        groupId,
         password,
       })
 

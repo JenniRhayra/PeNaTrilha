@@ -1,7 +1,7 @@
 import { hash } from 'bcryptjs'
-import { User } from '../../../../entities/User'
 import { ICreateUserDTO } from '../../DTO/ICreateUserDTO'
 import IUserRepository from '../../repositories/IUserRepository'
+import { User } from '../../../../entities/User'
 
 export class CreateUserUseCase {
   // eslint-disable-next-line no-useless-constructor
@@ -9,6 +9,7 @@ export class CreateUserUseCase {
 
   async execute(data: ICreateUserDTO): Promise<User> {
     const userAlreadyExist = await this.userRepository.findByEmail(data.email)
+
     if (userAlreadyExist) {
       throw new Error('Usuário já cadastrado.')
     }
@@ -16,8 +17,6 @@ export class CreateUserUseCase {
     const user = new User(data)
     const passwordHash = await hash(data.password, 8)
     user.password = String(passwordHash)
-
-    console.log('password', passwordHash)
 
     await this.userRepository.create(user)
 
