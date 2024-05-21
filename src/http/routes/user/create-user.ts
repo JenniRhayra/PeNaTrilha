@@ -1,12 +1,12 @@
 import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
-import { prisma } from '../../lib/prisma'
-import { BadRequestError } from './_error/BadRequestError'
 import { hash } from 'bcryptjs'
+import { prisma } from '../../../lib/prisma'
+import { BadRequestError } from '../_error/BadRequestError'
 
-export async function createUser(fastify: FastifyInstance) {
-  fastify.withTypeProvider<ZodTypeProvider>().post(
+export async function createUser(app: FastifyInstance) {
+  app.withTypeProvider<ZodTypeProvider>().post(
     '/user/create-user',
     {
       schema: {
@@ -23,12 +23,16 @@ export async function createUser(fastify: FastifyInstance) {
             message: z.string(),
             error: z.object({}),
           }),
+          500: z.object({
+            message: z.string(),
+            error: z.object({}),
+          }),
         },
       },
     },
     async (request, reply) => {
       const { email, password, group } = request.body
-
+      console.log(email)
       const userAlreadyExist = await prisma.user.findFirst({
         where: {
           email,
@@ -40,17 +44,20 @@ export async function createUser(fastify: FastifyInstance) {
       }
 
       const passwordHash = await hash(password, 8)
-
+      console.log(email, password, group)
       try {
         await prisma.user.create({
           data: {
             email,
             password: passwordHash,
-            group_id: 1,
+            group,
           },
         })
       } catch (error) {
-        console.log(error)
+        console.log('erro', error)
+        return reply
+          .code(500)
+          .send({ message: 'Ocorreu um erro ao criar o usuário', error })
       }
 
       return reply.code(201).send()
