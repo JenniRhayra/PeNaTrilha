@@ -31,6 +31,7 @@ export async function createUser(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      console.log('OLA')
       const { email, password, group } = request.body
       console.log(email)
       const userAlreadyExist = await prisma.user.findFirst({

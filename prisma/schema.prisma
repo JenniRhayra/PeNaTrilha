@@ -9,25 +9,25 @@ datasource db {
 
 model User {
   id       Int     @id @default(autoincrement())
-  name     String  @db.VarChar(30)
+  name     String? @db.VarChar(30)
   email    String  @unique
   password String
   isActive Boolean @default(true)
-  phone    String  @db.VarChar(11)
+  phone    String? @db.VarChar(11)
   group    String  @db.Char(1)
 
   RefreshToken RefreshToken[]
-  parkManager ParkManager[]
-  guide Guide[]
-  parkVisit ParkVisit[]
-  adminSW AdminSW[]
+  parkManager  ParkManager[]
+  guide        Guide[]
+  parkVisit    ParkVisit[]
+  adminSW      AdminSW[]
 }
 
 model AdminSW {
   id Int @id @default(autoincrement())
 
   userId Int
-  user User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
 
   parkManager ParkManager[]
 }
@@ -40,7 +40,7 @@ model RefreshToken {
 }
 
 model Institution {
-  id         Int    @id @default(autoincrement())
+  id              Int    @id @default(autoincrement())
   institutionName String @db.VarChar(60)
 
   parkManager ParkManager[]
@@ -53,16 +53,16 @@ model Park {
   site        String @db.VarChar(40)
   parkImage   Bytes  @db.ByteA
 
-  openingHours OpeningHours[]
-  parkLocalization ParkLocalization[]
-  parkGuide ParkGuide[]
-  activity Activity[]
+  openingHours       OpeningHours[]
+  parkLocalization   ParkLocalization[]
+  parkGuide          ParkGuide[]
+  activity           Activity[]
   parkInfrastructure ParkInfrastructure[]
-  event Event[]
-  parkForestType ParkForestType[]
-  goodPractice GoodPractice[]
-  parkManager ParkManager[]
-  parkVisit ParkVisit[]
+  event              Event[]
+  parkForestType     ParkForestType[]
+  goodPractice       GoodPractice[]
+  parkManager        ParkManager[]
+  parkVisit          ParkVisit[]
 }
 
 model OpeningHours {
@@ -72,43 +72,42 @@ model OpeningHours {
   endTime   DateTime @db.Time()
 
   parkId Int
-  park Park @relation(fields: [parkId], references: [id])
+  park   Park @relation(fields: [parkId], references: [id])
 }
 
 model ParkLocalization {
-  id Int @id @default(autoincrement())
-  street String @db.VarChar(40)
-  number String @db.VarChar(6)
-  zipCode String @db.VarChar(8)
-  publicPlace String @db.VarChar(10)
-  city String @db.VarChar(50)
-  state String @db.VarChar(2)
+  id           Int    @id @default(autoincrement())
+  street       String @db.VarChar(40)
+  number       String @db.VarChar(6)
+  zipCode      String @db.VarChar(8)
+  publicPlace  String @db.VarChar(10)
+  city         String @db.VarChar(50)
+  state        String @db.VarChar(2)
   neighborhood String @db.VarChar(40)
-  core String @db.VarChar(30)
+  core         String @db.VarChar(30)
 
   parkId Int
-  park Park @relation(fields: [parkId], references: [id])
+  park   Park @relation(fields: [parkId], references: [id])
 }
 
 model ParkManager {
   id             Int    @id @default(autoincrement())
-  cpf            String @db.VarChar(11) @unique
+  cpf            String @unique @db.VarChar(11)
   rg             String @db.VarChar(9)
   parkBond       Bytes  @db.ByteA
   fullName       String @db.VarChar(60)
   approvalStatus String @db.Char(1)
 
-  parkId    Int
-  userId    Int
-  institutionId  Int
-  adminSWId Int
-  park Park @relation(fields: [parkId], references: [id])
-  user User @relation(fields: [userId], references: [id])
-  institution Institution @relation(fields: [institutionId], references: [id])
-  adminSW AdminSW @relation(fields: [adminSWId], references: [id])
+  parkId        Int
+  userId        Int
+  institutionId Int
+  adminSWId     Int
+  park          Park        @relation(fields: [parkId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  adminSW       AdminSW     @relation(fields: [adminSWId], references: [id])
 
   guide Guide[]
-  
 }
 
 model Guide {
@@ -122,11 +121,11 @@ model Guide {
 
   userId        Int
   parkManagerId Int
-  user User @relation(fields: [userId], references: [id])
-  parkManager ParkManager @relation(fields: [parkManagerId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+  parkManager   ParkManager @relation(fields: [parkManagerId], references: [id])
 
-  parkGuide ParkGuide[]
-  languageGuide LanguageGuide[]
+  parkGuide      ParkGuide[]
+  languageGuide  LanguageGuide[]
   specialtyGuide SpecialtyGuide[]
 }
 
@@ -143,8 +142,8 @@ model LanguageGuide {
 
   languageId Int
   guideId    Int
-  language Language @relation(fields: [languageId], references: [id])
-  guide Guide @relation(fields: [guideId], references: [id])
+  language   Language @relation(fields: [languageId], references: [id])
+  guide      Guide    @relation(fields: [guideId], references: [id])
 }
 
 model Specialty {
@@ -159,67 +158,66 @@ model SpecialtyGuide {
 
   specialtyId Int
   guideId     Int
-  specialty Specialty @relation(fields: [specialtyId], references: [id])
-  guide Guide @relation(fields: [guideId], references: [id])
+  specialty   Specialty @relation(fields: [specialtyId], references: [id])
+  guide       Guide     @relation(fields: [guideId], references: [id])
 }
 
 model ParkGuide {
   id Int @id @default(autoincrement())
 
-  parkId Int
+  parkId  Int
   guideId Int
 
-  park Park @relation(fields: [parkId], references: [id])
+  park  Park  @relation(fields: [parkId], references: [id])
   guide Guide @relation(fields: [guideId], references: [id])
 }
 
 model Activity {
-  id Int @id @default(autoincrement())
-  percurso Float @db.DoublePrecision
-  duracao Float @db.DoublePrecision
-  description String @db.VarChar(60)
-  isMonitored Boolean 
-  difficultyLevel String @db.Char(1)
-  activityName String @db.VarChar(40)
-  activityImage String @db.VarChar(30)
+  id              Int     @id @default(autoincrement())
+  percurso        Float   @db.DoublePrecision
+  duracao         Float   @db.DoublePrecision
+  description     String  @db.VarChar(60)
+  isMonitored     Boolean
+  difficultyLevel String  @db.Char(1)
+  activityName    String  @db.VarChar(40)
+  activityImage   String  @db.VarChar(30)
 
   parkId Int
-  park Park @relation(fields: [parkId], references: [id])
-
+  park   Park @relation(fields: [parkId], references: [id])
 }
 
 model Infrastructure {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   type String @db.VarChar(40)
 
   parkInfrastructure ParkInfrastructure[]
 }
 
 model ParkInfrastructure {
-  id Int @id @default(autoincrement())
+  id     Int     @id @default(autoincrement())
   status Boolean
 
-  parkId Int
+  parkId           Int
   infrastructureId Int
-  park Park @relation(fields: [parkId], references: [id])
-  infrastructure Infrastructure @relation(fields: [infrastructureId], references: [id])
+  park             Park           @relation(fields: [parkId], references: [id])
+  infrastructure   Infrastructure @relation(fields: [infrastructureId], references: [id])
 }
 
 model Event {
-  id Int @id @default(autoincrement())
-  event_name String @db.VarChar(30)
-  description String @db.VarChar()
-  start_date DateTime @db.Date
-  end_date DateTime @db.Date
-  locationRef String @db.VarChar(30)
-  eventImage Bytes @db.ByteA
+  id          Int      @id @default(autoincrement())
+  event_name  String   @db.VarChar(30)
+  description String   @db.VarChar()
+  start_date  DateTime @db.Date
+  end_date    DateTime @db.Date
+  locationRef String   @db.VarChar(30)
+  eventImage  Bytes    @db.ByteA
 
   parkId Int
-  park Park @relation(fields: [parkId], references: [id])
+  park   Park @relation(fields: [parkId], references: [id])
 }
 
 model ForestType {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   name String @db.VarChar(40)
 
   parkForestType ParkForestType[]
@@ -227,20 +225,20 @@ model ForestType {
 
 model ParkForestType {
   id Int @id @default(autoincrement())
-  
-  parkId Int
+
+  parkId       Int
   forestTypeId Int
-  park Park @relation(fields: [parkId], references: [id])
-  forestType ForestType @relation(fields: [forestTypeId], references: [id])
+  park         Park       @relation(fields: [parkId], references: [id])
+  forestType   ForestType @relation(fields: [forestTypeId], references: [id])
 }
 
 model GoodPractice {
-  id Int @id @default(autoincrement())
-  title String @db.VarChar(130)
-  practiceImage Bytes @db.ByteA
-  
+  id            Int    @id @default(autoincrement())
+  title         String @db.VarChar(130)
+  practiceImage Bytes  @db.ByteA
+
   parkId Int
-  park Park @relation(fields: [parkId], references: [id])
+  park   Park @relation(fields: [parkId], references: [id])
 }
 
 model ParkVisit {
@@ -248,6 +246,6 @@ model ParkVisit {
 
   parkId Int
   userId Int
-  park Park @relation(fields: [parkId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  park   Park @relation(fields: [parkId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
 }

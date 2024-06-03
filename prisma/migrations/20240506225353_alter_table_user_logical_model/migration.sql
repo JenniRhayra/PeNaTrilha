@@ -11,11 +11,11 @@
 
 */
 -- DropForeignKey
-ALTER TABLE "RefreshToken" DROP CONSTRAINT "RefreshToken_userId_fkey";
+-- ALTER TABLE "RefreshToken" DROP CONSTRAINT "RefreshToken_userId_fkey";
 
 -- AlterTable
-ALTER TABLE "RefreshToken" DROP COLUMN "userId",
-ADD COLUMN     "userId" INTEGER NOT NULL;
+ALTER TABLE "RefreshToken" DROP COLUMN "user_id",
+ADD COLUMN     "user_id" INTEGER NOT NULL;
 
 -- AlterTable
 ALTER TABLE "User" DROP CONSTRAINT "User_pkey",
@@ -24,12 +24,12 @@ ADD COLUMN     "name" VARCHAR(30) NOT NULL,
 ADD COLUMN     "phone" VARCHAR(11) NOT NULL,
 DROP COLUMN "id",
 ADD COLUMN     "id" SERIAL NOT NULL,
-ALTER COLUMN "group" DROP DEFAULT,
-ALTER COLUMN "group" SET DATA TYPE CHAR(1),
+-- ALTER COLUMN "group" DROP DEFAULT,
+-- ALTER COLUMN "group" SET DATA TYPE CHAR(1),
 ADD CONSTRAINT "User_pkey" PRIMARY KEY ("id");
 
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+-- -- CreateIndex
+-- CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
-ALTER TABLE "RefreshToken" ADD CONSTRAINT "RefreshToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- ALTER TABLE "RefreshToken" ADD CONSTRAINT "RefreshToken_userId_fkey" FOREIGN KEY ("user_Id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
