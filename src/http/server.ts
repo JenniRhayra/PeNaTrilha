@@ -14,9 +14,13 @@ import { authenticateWithPassword } from './routes/auth/authenticate-with-passwo
 import { createUser } from './routes/user/create-user'
 import { listUsers } from './routes/user/list-users'
 import { getProfile } from './routes/auth/get-profile'
+import { listLanguages } from './routes/guide/list-languages'
+import { listForestType } from './routes/park/list-forest-type'
+import { createGuideAccount } from './routes/guide/create-guide-account'
+import { createParkAccount } from './routes/park/create-park-account'
+// import fastifyMultipart from '@fastify/multipart'
 
-const app = fastify({ logger: true }).withTypeProvider<ZodTypeProvider>()
-
+const app = fastify({ logger: false }).withTypeProvider<ZodTypeProvider>()
 app.setSerializerCompiler(serializerCompiler)
 app.setValidatorCompiler(validatorCompiler)
 
@@ -33,11 +37,21 @@ app.register(fastifySwagger, {
   transform: jsonSchemaTransform,
 })
 
+// AUTH
 app.register(authenticateWithPassword)
 app.register(getProfile)
 
+// USER
 app.register(createUser)
 app.register(listUsers)
+
+//GUIDE
+app.register(createGuideAccount)
+app.register(listLanguages)
+
+//PARK
+app.register(createParkAccount)
+app.register(listForestType)
 
 app.register(fastifySwaggerUi, {
   routePrefix: '/docs',
@@ -48,6 +62,8 @@ app.register(fastifyJwt, {
 })
 
 app.register(fastifyCors)
+
+// app.register(fastifyMultipart);
 
 app.listen({ port: 3333 }).then(() => {
   console.log('HTTP server running in port 3333🔥')

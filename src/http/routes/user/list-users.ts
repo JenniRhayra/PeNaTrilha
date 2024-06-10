@@ -15,8 +15,8 @@ export async function listUsers(fastify: FastifyInstance) {
           201: z.array(
             z.object({
               email: z.string().email(),
-              group_id: z.number(),
-              active: z.boolean(),
+              group: z.string(),
+              isActive: z.boolean(),
             }),
           ),
           400: z.object({
@@ -26,11 +26,12 @@ export async function listUsers(fastify: FastifyInstance) {
       },
     },
     async (request, reply) => {
+     
       const users = await prisma.user.findMany({
         select: {
           email: true,
-          group_id: true,
-          active: true,
+          group: true,
+          isActive: true,
         },
       })
 

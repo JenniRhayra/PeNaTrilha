@@ -1,0 +1,183 @@
+import { FastifyInstance } from 'fastify'
+import { ZodTypeProvider } from 'fastify-type-provider-zod'
+import { z } from 'zod'
+import { prisma } from '../../../lib/prisma'
+import { BadRequestError } from '../_error/BadRequestError'
+import fastifyMultipart from '@fastify/multipart'
+import path from 'path'
+import { promises as fs } from 'fs';
+import axios from 'axios'
+import FormData from 'form-data'
+
+interface IAddressProps {
+  street: string;
+  zipCode: string;
+  city: string;
+  state: string;
+  neighborhood: string;
+  parkId: number;
+}
+
+export async function createParkAccount(app: FastifyInstance) {
+  app.register(fastifyMultipart);
+
+  app.withTypeProvider<ZodTypeProvider>().post(
+    '/park/create-account',
+    {
+      schema: {
+        tags: ['park'],
+        summary: 'Criar conta do parque',
+        body: z.any(),
+        response: {
+          201: z.void(),
+          400: z.object({
+            message: z.string(),
+          }),
+          500: z.object({
+            message: z.string(),
+            error: z.object({}),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+        const parts = request.parts();
+        
+        const fields: any = {};
+        let imageFile: any;
+        let imagePath;
+        let imageUrl = undefined;
+
+        for await (const part of parts) {
+          // console.log('part',part)
+          if (part.file) {
+            imageFile = part;
+            const uploadDir = path.join(__dirname, '../../../../uploads');
+            await fs.mkdir(uploadDir, { recursive: true });
+            imagePath = path.join(uploadDir, imageFile.filename);
+            await fs.writeFile(imagePath, await imageFile.toBuffer());
+            const buffer = await imageFile.toBuffer();
+
+
+            const formData = new FormData();
+            formData.append('image', buffer.toString('base64'));
+
+
+            const imgbbApiKey = process.env.IMGBB_KEY;
+            const imgbbResponse = await axios.post(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, formData, {
+              headers: {
+                ...formData.getHeaders(),
+              }
+            });
+
+            imageUrl = imgbbResponse.data.data.url;
+            console.log('URL da imagem:', imageUrl);
+            // break;
+          }
+          else {
+            fields[part.fieldname] = part.value;
+          }
+        }
+
+        const cleanCNPJ = fields.cnpj.replace(/[^\d]/g, '');
+
+        const parkAlreadyExist = await prisma.park.findFirst({
+          where: {
+            lawNumber: cleanCNPJ
+          }
+        })
+
+        if(parkAlreadyExist){
+          throw new BadRequestError(`Parque com o CNPJ ${fields.cnpj} já cadastrado.`)
+        }
+
+        const { id } = await prisma.park.create(
+          {
+            data: {
+              lawNumber: fields.law_number != '' ? fields.law_number : cleanCNPJ,
+              description: fields?.park_comment,
+              site: fields?.site,
+              parkImage: imageUrl ?? null
+            },
+          }
+        )
+
+        const forestTypes = JSON.parse(fields?.select_forest_type);
+
+        for await (const forestType of forestTypes) {
+          const forestTypeExist = await prisma.forestType.findFirst({
+            where: {
+              id: forestType.value
+            }
+          })
+          
+          if(!forestTypeExist) {
+            throw new BadRequestError(`Tipo de mata com a identificação ${forestType.value} não encontrado.`)
+          }
+
+          await prisma.parkForestType.create({
+            data: {
+              forestTypeId: forestTypeExist.id,
+              parkId: id,
+            }
+          })
+        }
+
+        const parkManager = await prisma.parkManager.create({
+          data: {
+            approvalStatus: 'PENDENTE',
+            userId: 1,
+            parkId: id
+          }
+        })
+
+        const locations = JSON.parse(fields?.getParkProps);
+
+        const localization: IAddressProps = {
+          street: '',
+          zipCode: '',
+          city: '',
+          state: '',
+          neighborhood: '',
+          parkId: 0
+        };
+
+        for await (const location of locations) {
+          const { long_name, short_name, types } = location
+
+          switch (String(types[0])) {
+            case 'route':
+              localization.street = long_name
+              break;
+            case 'sublocality_level_1':
+              localization.neighborhood = long_name
+            break;
+            case 'administrative_area_level_2':
+              localization.city = short_name
+            break;
+            case 'administrative_area_level_1':
+              localization.state = short_name
+            break;
+            case 'postal_code':
+              localization.zipCode = long_name
+              break;
+            default:
+              break;
+          }
+        }
+
+        const parkLocation = await prisma.parkLocalization.create({
+          data: {
+            parkId: id,
+            street: localization.street,
+            state: localization.state,
+            city: localization.city,
+            zipCode: localization.zipCode.replace(/\D/g, ''),
+            neighborhood: localization.neighborhood
+          }
+        })
+
+        return reply.code(201).send();
+    },
+  );
+}

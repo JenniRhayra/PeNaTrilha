@@ -3,36 +3,16 @@ import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { hash } from 'bcryptjs'
 import { prisma } from '../../../lib/prisma'
-import { BadRequestError } from '../_error/BadRequestError'
 import { Groups } from '@prisma/client'
 
-function mapGroupsZodToPrisma(value: string): string {
-  switch (value) {
-    case '1':
-      return 'ADMINISTRADOR';
-    case '2':
-      return 'VISITANTE';
-    case '3':
-      return 'GERENTE';
-    case '4':
-      return 'GUIA';
-    default:
-      throw new Error(`Valor de grupo inválido: ${value}`);
-  }
-}
-
-export async function createUser(app: FastifyInstance) {
+export async function createGuideAccount(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
-    '/user/create-user',
+    '/guide/create-guide-account',
     {
       schema: {
-        tags: ['user'],
-        summary: 'Criar uma nova conta',
-        body: z.object({
-          email: z.string().email(),
-          password: z.string().min(6),
-          group: z.enum(['1', '2', '3', '4']),
-        }),
+        tags: ['guide'],
+        summary: 'Criar conta do guia',
+        body: z.any(),
         response: {
           201: z.void(),
           400: z.object({
@@ -83,3 +63,7 @@ export async function createUser(app: FastifyInstance) {
     },
   )
 }
+function mapGroupsZodToPrisma(group: any) {
+  throw new Error('Function not implemented.')
+}
+

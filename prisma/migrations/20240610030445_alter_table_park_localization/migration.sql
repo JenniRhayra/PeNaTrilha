@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "ParkLocalization" ALTER COLUMN "number" DROP NOT NULL,
+ALTER COLUMN "publicPlace" DROP NOT NULL,
+ALTER COLUMN "neighborhood" DROP NOT NULL,
+ALTER COLUMN "core" DROP NOT NULL;
