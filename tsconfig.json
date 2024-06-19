@@ -12,5 +12,5 @@
   "include": [
     "src/**/*.ts",
     "@types/*.d.ts"
-  ]
+, "src/http/routes/park/create-park-account_v1ts"  ]
 }

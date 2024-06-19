@@ -18,7 +18,10 @@ import { listLanguages } from './routes/guide/list-languages'
 import { listForestType } from './routes/park/list-forest-type'
 import { createGuideAccount } from './routes/guide/create-guide-account'
 import { createParkAccount } from './routes/park/create-park-account'
-// import fastifyMultipart from '@fastify/multipart'
+import { listPark } from './routes/park/list-park'
+import { listSpeciality } from './routes/guide/list-specialitys'
+import fastifyCookie from '@fastify/cookie';
+import { createManagerAccount } from './routes/manager/create-manager-account'
 
 const app = fastify({ logger: false }).withTypeProvider<ZodTypeProvider>()
 app.setSerializerCompiler(serializerCompiler)
@@ -37,6 +40,14 @@ app.register(fastifySwagger, {
   transform: jsonSchemaTransform,
 })
 
+app.register(fastifyCookie);
+
+app.register(fastifyJwt, {
+  secret: process.env.JWT,
+})
+
+app.register(fastifyCors)
+
 // AUTH
 app.register(authenticateWithPassword)
 app.register(getProfile)
@@ -48,22 +59,19 @@ app.register(listUsers)
 //GUIDE
 app.register(createGuideAccount)
 app.register(listLanguages)
+app.register(listSpeciality)
+
+//MANAGER
+app.register(createManagerAccount)
 
 //PARK
 app.register(createParkAccount)
 app.register(listForestType)
+app.register(listPark)
 
 app.register(fastifySwaggerUi, {
   routePrefix: '/docs',
 })
-
-app.register(fastifyJwt, {
-  secret: process.env.JWT,
-})
-
-app.register(fastifyCors)
-
-// app.register(fastifyMultipart);
 
 app.listen({ port: 3333 }).then(() => {
   console.log('HTTP server running in port 3333🔥')

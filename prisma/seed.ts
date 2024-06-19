@@ -3,11 +3,32 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function resetTable() {
+  await prisma.parkGuide.deleteMany({});
+  await prisma.languageGuide.deleteMany({});
+  await prisma.guide.deleteMany({});
+
+  await prisma.parkLocalization.deleteMany({});
+  await prisma.parkForestType.deleteMany({});
+  await prisma.parkManager.deleteMany({});
+  await prisma.park.deleteMany({});
+
   await prisma.language.deleteMany({});
   await prisma.forestType.deleteMany({});
+  await prisma.specialty.deleteMany({});
+
+  await prisma.$executeRaw`TRUNCATE TABLE "ParkGuide" RESTART IDENTITY CASCADE;`
+  await prisma.$executeRaw`TRUNCATE TABLE "LanguageGuide" RESTART IDENTITY CASCADE;`
+  await prisma.$executeRaw`TRUNCATE TABLE "Guide" RESTART IDENTITY CASCADE;`
+
+
+  await prisma.$executeRaw`TRUNCATE TABLE "ParkLocalization" RESTART IDENTITY CASCADE;`
+  await prisma.$executeRaw`TRUNCATE TABLE "ParkForestType" RESTART IDENTITY CASCADE;`
+  await prisma.$executeRaw`TRUNCATE TABLE "ParkManager" RESTART IDENTITY CASCADE;`
+  await prisma.$executeRaw`TRUNCATE TABLE "Park" RESTART IDENTITY CASCADE;`
 
   await prisma.$executeRaw`TRUNCATE TABLE "Language" RESTART IDENTITY CASCADE;`
   await prisma.$executeRaw`TRUNCATE TABLE "ForestType" RESTART IDENTITY CASCADE;`
+  await prisma.$executeRaw`TRUNCATE TABLE "Specialty" RESTART IDENTITY CASCADE;`
 }
 
 async function main() {
@@ -52,6 +73,27 @@ async function main() {
   for (const forest of forestTypes) {
     await prisma.forestType.create({
       data: forest
+    })
+  }
+
+  const specialtys = [
+    {specialtyName: 'História e Cultura'},
+    {specialtyName: 'Ecoturismo'},
+    {specialtyName: 'Turismo de Aventura'},
+    {specialtyName: 'Turismo Gastronômico'},
+    {specialtyName: 'Turismo de Luxo'},
+    {specialtyName: 'Turismo Religioso'},
+    {specialtyName: 'Turismo Arqueológico'},
+    {specialtyName: 'Turismo de Acessibilidade'},
+    {specialtyName: 'Turismo Esportivo'},
+    {specialtyName: 'Turismo de Bem-Estar'},
+    {specialtyName: 'Turismo de Compras'},
+    {specialtyName: 'Turismo Fotográfico'},
+  ]
+
+  for (const specialty of specialtys) {
+    await prisma.specialty.create({
+      data: specialty
     })
   }
 }
