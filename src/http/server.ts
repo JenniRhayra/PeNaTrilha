@@ -22,8 +22,17 @@ import { listPark } from './routes/park/list-park'
 import { listSpeciality } from './routes/guide/list-specialitys'
 import fastifyCookie from '@fastify/cookie';
 import { createManagerAccount } from './routes/manager/create-manager-account'
+import { listManyParkInfo } from './routes/park/list-many-parks-info'
+import { listManyParkInfoById } from './routes/park/list-many-parks-info-by-id'
+import { findParkVisit } from './routes/user/find-park-visit'
+import { getGuide } from './routes/guide/get-guide'
+import { listActivityById } from './routes/park/list-activity-by-id'
+import { updateParkVisit } from './routes/user/update-park-visit'
+import { listEventById } from './routes/park/list-event-by-id'
+import { getGuideProfile } from './routes/guide/get-guide-profile'
+import { listParkVisit } from './routes/user/list-park-visit'
 
-const app = fastify({ logger: false }).withTypeProvider<ZodTypeProvider>()
+const app = fastify({ logger: false, bodyLimit: 90485760, maxParamLength: 90000 }).withTypeProvider<ZodTypeProvider>()
 app.setSerializerCompiler(serializerCompiler)
 app.setValidatorCompiler(validatorCompiler)
 
@@ -54,10 +63,15 @@ app.register(getProfile)
 
 // USER
 app.register(createUser)
+app.register(findParkVisit)
+app.register(listParkVisit)
 app.register(listUsers)
+app.register(updateParkVisit)
 
 //GUIDE
 app.register(createGuideAccount)
+app.register(getGuide)
+app.register(getGuideProfile)
 app.register(listLanguages)
 app.register(listSpeciality)
 
@@ -66,7 +80,11 @@ app.register(createManagerAccount)
 
 //PARK
 app.register(createParkAccount)
+app.register(listActivityById)
+app.register(listEventById)
 app.register(listForestType)
+app.register(listManyParkInfo)
+app.register(listManyParkInfoById)
 app.register(listPark)
 
 app.register(fastifySwaggerUi, {

@@ -2,12 +2,16 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import path from 'path'
-import { promises as fs } from 'fs';
+import fs from 'fs';
 import axios from 'axios'
 import FormData from 'form-data'
 import fastifyMultipart from '@fastify/multipart'
 import { prisma } from '../../../lib/prisma';
 import { BadRequestError } from '../_error/BadRequestError';
+import console from 'console';
+import nodemailer, { Transporter } from 'nodemailer';
+import { resolve } from 'path';
+import handlebars from 'handlebars';
 
 export async function createGuideAccount(app: FastifyInstance) {
   app.register(fastifyMultipart);
@@ -19,7 +23,12 @@ export async function createGuideAccount(app: FastifyInstance) {
         summary: 'Criar conta do guia',
         body: z.any(),
         response: {
-          201: z.void(),
+          201: z.object({
+            token: z.string(),
+            id: z.number(),
+            email: z.string(),
+            group: z.enum(['ADMINISTRADOR', 'VISITANTE', 'GERENTE', 'GUIA']),
+          }),
           400: z.object({
             message: z.string(),
           }),
@@ -31,6 +40,7 @@ export async function createGuideAccount(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+     try {
       const parts = request.parts();
         
       const fields: any = {};
@@ -42,10 +52,10 @@ export async function createGuideAccount(app: FastifyInstance) {
         // console.log('part',part)
         if (part.file) {
           imageFile = part;
-          const uploadDir = path.join(__dirname, '../../../../uploads');
-          await fs.mkdir(uploadDir, { recursive: true });
-          imagePath = path.join(uploadDir, imageFile.filename);
-          await fs.writeFile(imagePath, await imageFile.toBuffer());
+          // const uploadDir = path.join(__dirname, '../../../../uploads');
+          // await fs.mkdir(uploadDir, { recursive: true });
+          // imagePath = path.join(uploadDir, imageFile.filename);
+          // await fs.writeFile(imagePath, await imageFile.toBuffer());
           const buffer = await imageFile.toBuffer();
 
 
@@ -77,9 +87,19 @@ export async function createGuideAccount(app: FastifyInstance) {
 
       const park = JSON.parse(fields?.select_park)
 
-      // console.log(park)
+      const user = await prisma.user.findFirst({
+        where: {
+          email: fields?.email
+        }
+      })
 
-      // console.log(data)
+      if (!user.isActive) {
+        throw new BadRequestError('Usuário desativado.');
+      }
+
+      if (user.group != 'GUIA') {
+        throw new BadRequestError('Usuário não pertence ao grupo de Guia.');
+      }
 
       const parkData = await prisma.park.findFirst({
         where: {
@@ -91,14 +111,15 @@ export async function createGuideAccount(app: FastifyInstance) {
         throw new BadRequestError('Parque não encontrado.')
       }
 
+      console.log(parkData)
+
       const { id } = await prisma.guide.create({
         data: {
           biography: fields?.description,
           nickname: fields?.slugname,
           birthDate: data,
           guideImage: imageUrl,
-          userId: 1,
-          parkManagerId: parkData.id,
+          userId: user.id,
           approvalStatus: 'PENDENTE',
           gender: fields?.gender
         }
@@ -152,12 +173,69 @@ export async function createGuideAccount(app: FastifyInstance) {
         parkId: parkData.id
       }
      })
+     
+     await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        name: fields.name
+      }
+    });
 
-      return reply.code(201).send()
+
+    try {
+      const transporter = nodemailer.createTransport({
+        host: 'smtp-mail.outlook.com',
+        port: 587,
+        auth: {
+          user: 'tcc.penatrilha@hotmail.com',
+          pass: 'senhaforte@123'
+        },
+        tls: {
+          rejectUnauthorized: true
+        }
+      })
+
+      const variable = {
+        managerName: user.name,
+        currentYear: String(new Date().getFullYear())
+      }
+
+      const templatePath = resolve(__dirname, '..', '..', '..', 'views', 'guideAprovation', 'index.hbs')
+
+      const tamplateFileContent = await fs.readFileSync(templatePath).toString('utf-8');
+
+      const templateParse = handlebars.compile(tamplateFileContent);
+
+      const templateHTML = templateParse(variable)
+
+      const message = await transporter.sendMail({
+        to: user.email,
+        from: 'tcc.penatrilha@hotmail.com',
+        subject: 'Pé na Trilha - Validação de gerente',
+        html: templateHTML,
+        cc: 'gusthavorangel@gmail.com,jprgui@gmail.com'
+        // attachments //Arquivos se precisar
+      })
+
+      console.log('Message sent: %s', message.messageId);
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(message));
+    } catch (error) {
+      console.log('error', error)
+    }
+
+    const token = await reply.jwtSign(
+      {
+        sub: user.id,
+      },
+      {
+        expiresIn: '1d',
+      },
+    )
+
+      return reply.code(201).send({ token, id: user.id, email: user.email, group: user.group })
+     } catch (error) {
+      console.log(error)
+     }
     },
   )
 }
-function mapGroupsZodToPrisma(group: any) {
-  throw new Error('Function not implemented.')
-}
-

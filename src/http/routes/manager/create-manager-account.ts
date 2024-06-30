@@ -72,6 +72,8 @@ export async function createManagerAccount(app: FastifyInstance) {
         }
   
         const { label, value } = select_park[0];
+
+        console.log(label, value)
   
         const park = (await prisma.park.findFirst({where: {id: value}})) || (await prisma.park.create({data: {park_name: label}}))
   
@@ -112,7 +114,7 @@ export async function createManagerAccount(app: FastifyInstance) {
           currentYear: String(new Date().getFullYear())
         }
   
-        const templatePath = resolve(__dirname, '..', '..', '..', 'views', 'welcome', 'index.hbs')
+        const templatePath = resolve(__dirname, '..', '..', '..', 'views', 'managerAprovation', 'index.hbs')
   
         const tamplateFileContent = fs.readFileSync(templatePath).toString('utf-8');
   

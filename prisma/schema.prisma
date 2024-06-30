@@ -26,6 +26,22 @@ enum Gender {
   NAO_RESPONDER @map("3")
 }
 
+enum DifficultyLevel {
+  FACIL   @map("1")
+  MEDIO   @map("2")
+  DIFICIL @map("3")
+}
+
+enum DayWeek {
+  SEGUNDA @map("1")
+  TERCA   @map("2")
+  QUARTA  @map("3")
+  QUINTA  @map("4")
+  SEXTA   @map("5")
+  SABADO  @map("6")
+  DOMINGO @map("7")
+}
+
 model User {
   id       Int     @id @default(autoincrement())
   name     String? @db.VarChar(30)
@@ -35,20 +51,11 @@ model User {
   phone    String? @db.VarChar(11)
   group    Groups
 
-  RefreshToken RefreshToken[]
-  parkManager  ParkManager[]
-  guide        Guide[]
-  parkVisit    ParkVisit[]
-  adminSW      AdminSW[]
-}
-
-model AdminSW {
-  id Int @id @default(autoincrement())
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
-
-  parkManager ParkManager[]
+  RefreshToken  RefreshToken[]
+  managedParks  ParkManager[]  @relation("UserParkManager")
+  user_managers ParkManager[]  @relation("ManagerParkManager")
+  guide         Guide[]
+  parkVisit     ParkVisit[]
 }
 
 model RefreshToken {
@@ -60,14 +67,21 @@ model RefreshToken {
 }
 
 model Park {
-  id          Int     @id @default(autoincrement())
-  park_name   String  @db.VarChar(200)
-  description String? @db.VarChar(150)
-  site        String? @db.VarChar(40)
-  parkImage   String? @db.VarChar(150)
+  id           Int     @id @default(autoincrement())
+  park_name    String  @db.VarChar(500)
+  description  String? @db.VarChar(1000)
+  site         String? @db.VarChar(500)
+  parkImage    String? @db.VarChar(500)
+  street       String? @db.VarChar(500)
+  number       String? @db.VarChar(500)
+  zipCode      String? @db.VarChar(500)
+  publicPlace  String? @db.VarChar(500)
+  city         String? @db.VarChar(500)
+  state        String? @db.VarChar(500)
+  neighborhood String? @db.VarChar(500)
+  core         String? @db.VarChar(500)
 
   openingHours       OpeningHours[]
-  parkLocalization   ParkLocalization[]
   parkGuide          ParkGuide[]
   activity           Activity[]
   parkInfrastructure ParkInfrastructure[]
@@ -80,24 +94,9 @@ model Park {
 
 model OpeningHours {
   id        Int      @id @default(autoincrement())
-  dayWeek   String   @db.Char(1)
+  dayWeek   DayWeek
   startTime DateTime @db.Time()
   endTime   DateTime @db.Time()
-
-  parkId Int
-  park   Park @relation(fields: [parkId], references: [id])
-}
-
-model ParkLocalization {
-  id           Int     @id @default(autoincrement())
-  street       String  @db.VarChar(40)
-  number       String? @db.VarChar(6)
-  zipCode      String  @db.VarChar(8)
-  publicPlace  String? @db.VarChar(10)
-  city         String  @db.VarChar(50)
-  state        String  @db.VarChar(2)
-  neighborhood String? @db.VarChar(40)
-  core         String? @db.VarChar(30)
 
   parkId Int
   park   Park @relation(fields: [parkId], references: [id])
@@ -110,10 +109,10 @@ model ParkManager {
   approvalStatus ApprovalStatus
   parkId         Int
   userId         Int
-  adminSWId      Int?
+  userManagerId  Int?
   park           Park           @relation(fields: [parkId], references: [id])
-  user           User           @relation(fields: [userId], references: [id])
-  adminSW        AdminSW?       @relation(fields: [adminSWId], references: [id])
+  user           User           @relation("UserParkManager", fields: [userId], references: [id])
+  userManager    User?          @relation("ManagerParkManager", fields: [userManagerId], references: [id])
 
   guide Guide[]
 }
@@ -128,9 +127,9 @@ model Guide {
   guideImage     String         @db.VarChar(150)
 
   userId        Int
-  parkManagerId Int
-  user          User        @relation(fields: [userId], references: [id])
-  parkManager   ParkManager @relation(fields: [parkManagerId], references: [id])
+  parkManagerId Int?
+  user          User         @relation(fields: [userId], references: [id])
+  parkManager   ParkManager? @relation(fields: [parkManagerId], references: [id])
 
   parkGuide      ParkGuide[]
   languageGuide  LanguageGuide[]
@@ -145,9 +144,7 @@ model Language {
 }
 
 model LanguageGuide {
-  id           Int     @id @default(autoincrement())
-  fluencyLevel String? @db.Char(1)
-
+  id         Int      @id @default(autoincrement())
   languageId Int
   guideId    Int
   language   Language @relation(fields: [languageId], references: [id])
@@ -181,14 +178,14 @@ model ParkGuide {
 }
 
 model Activity {
-  id              Int     @id @default(autoincrement())
-  percurso        Float   @db.DoublePrecision
-  duracao         Float   @db.DoublePrecision
-  description     String  @db.VarChar(60)
+  id              Int             @id @default(autoincrement())
+  percurso        Float           @db.DoublePrecision
+  duracao         Float           @db.DoublePrecision
+  description     String          @db.VarChar(500)
   isMonitored     Boolean
-  difficultyLevel String  @db.Char(1)
-  activityName    String  @db.VarChar(40)
-  activityImage   String  @db.VarChar(30)
+  difficultyLevel DifficultyLevel
+  activityName    String          @db.VarChar(500)
+  activityImage   String          @db.VarChar(500)
 
   parkId Int
   park   Park @relation(fields: [parkId], references: [id])
@@ -213,12 +210,12 @@ model ParkInfrastructure {
 
 model Event {
   id          Int      @id @default(autoincrement())
-  event_name  String   @db.VarChar(30)
-  description String   @db.VarChar()
+  event_name  String   @db.VarChar(500)
+  description String   @db.VarChar(1000)
   start_date  DateTime @db.Date
   end_date    DateTime @db.Date
-  locationRef String   @db.VarChar(30)
-  eventImage  Bytes    @db.ByteA
+  locationRef String   @db.VarChar(500)
+  eventImage  String   @db.VarChar(500)
 
   parkId Int
   park   Park @relation(fields: [parkId], references: [id])
@@ -242,8 +239,8 @@ model ParkForestType {
 
 model GoodPractice {
   id            Int    @id @default(autoincrement())
-  title         String @db.VarChar(130)
-  practiceImage Bytes  @db.ByteA
+  title         String @db.VarChar(500)
+  practiceImage String @db.VarChar(500)
 
   parkId Int
   park   Park @relation(fields: [parkId], references: [id])

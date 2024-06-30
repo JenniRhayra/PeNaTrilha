@@ -19,6 +19,9 @@ export async function authenticateWithPassword(app: FastifyInstance) {
         response: {
           201: z.object({
             token: z.string(),
+            id: z.number(),
+            email: z.string(),
+            group: z.enum(['ADMINISTRADOR', 'VISITANTE', 'GERENTE', 'GUIA']),
           }),
           400: z.object({
             message: z.string(),
@@ -27,34 +30,39 @@ export async function authenticateWithPassword(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const { email, password } = request.body
-
-      const userAlreadyExist = await prisma.user.findUnique({
-        where: {
-          email,
-        },
-      })
-
-      if (!userAlreadyExist) {
-        throw new BadRequestError('Usuário ou senha incorreta.')
+      try {
+        const { email, password } = request.body
+        console.log(email, password)
+        const userAlreadyExist = await prisma.user.findUnique({
+          where: {
+            email,
+          },
+        })
+  
+        if (!userAlreadyExist) {
+          throw new BadRequestError('Usuário ou senha incorreta.')
+        }
+  
+        const passwordHash = await compare(password, userAlreadyExist.password)
+  
+        if (!passwordHash) {
+          throw new BadRequestError('Usuário ou senha incorreta.')
+        }
+  
+        const token = await reply.jwtSign(
+          {
+            sub: userAlreadyExist.id,
+          },
+          {
+            expiresIn: '1d',
+          },
+        )
+        console.log(userAlreadyExist)
+        reply.code(201).send({ token, id: userAlreadyExist.id, email, group: userAlreadyExist.group })
+      } catch (error) {
+        console.log('error', error);
+        return reply.code(400).send({ message: 'Ocorreu um erro ao listar os parques' });
       }
-
-      const passwordHash = await compare(password, userAlreadyExist.password)
-
-      if (!passwordHash) {
-        throw new BadRequestError('Usuário ou senha incorreta.')
-      }
-
-      const token = await reply.jwtSign(
-        {
-          sub: userAlreadyExist.id,
-        },
-        {
-          expiresIn: '1d',
-        },
-      )
-
-      reply.code(201).send({ token })
     },
   )
 }

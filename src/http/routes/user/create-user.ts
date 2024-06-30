@@ -116,7 +116,7 @@ export async function createUser(app: FastifyInstance) {
               currentYear: String(new Date().getFullYear())
             }
       
-            const templatePath = resolve(__dirname, '..', '..', '..', 'views', 'managerAprovation', 'index.hbs')
+            const templatePath = resolve(__dirname, '..', '..', '..', 'views', 'welcome', 'index.hbs')
       
             const tamplateFileContent = fs.readFileSync(templatePath).toString('utf-8');
       

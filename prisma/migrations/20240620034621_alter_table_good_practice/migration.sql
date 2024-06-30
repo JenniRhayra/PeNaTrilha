@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "GoodPractice" ALTER COLUMN "title" SET DATA TYPE VARCHAR(500),
+ALTER COLUMN "practiceImage" SET DATA TYPE VARCHAR(500);
