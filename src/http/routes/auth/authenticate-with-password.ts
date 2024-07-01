@@ -40,7 +40,11 @@ export async function authenticateWithPassword(app: FastifyInstance) {
         })
   
         if (!userAlreadyExist) {
-          throw new BadRequestError('Usuário ou senha incorreta.')
+          return reply.code(400).send({ message: 'Usuário ou senha incorreta.' })
+        }
+
+        if (!userAlreadyExist.isActive) {
+          return reply.code(400).send({ message: 'Usuário não encontrado.' })
         }
   
         const passwordHash = await compare(password, userAlreadyExist.password)
@@ -57,8 +61,8 @@ export async function authenticateWithPassword(app: FastifyInstance) {
             expiresIn: '1d',
           },
         )
-        console.log(userAlreadyExist)
-        reply.code(201).send({ token, id: userAlreadyExist.id, email, group: userAlreadyExist.group })
+
+        return reply.code(201).send({ token, id: userAlreadyExist.id, email, group: userAlreadyExist.group })
       } catch (error) {
         console.log('error', error);
         return reply.code(400).send({ message: 'Ocorreu um erro ao listar os parques' });

@@ -109,11 +109,11 @@ export async function listManyParkInfo(fastify: FastifyInstance) {
                     park: []
                 };
 
-                console.log('Fetching parks...');
+
                 const parks = await prisma.park.findMany();
 
                 for (const park of parks) {
-                    console.log(`Fetching park managers for park id: ${park.id}`);
+
                     const parkManagers = await prisma.parkManager.findMany({
                         where: {
                             parkId: park.id
@@ -123,7 +123,7 @@ export async function listManyParkInfo(fastify: FastifyInstance) {
                         }
                     });
 
-                    console.log(`Fetching guides for park id: ${park.id}`);
+
                     const guides = await prisma.guide.findMany({
                         where: {
                             parkManagerId: {
@@ -135,7 +135,7 @@ export async function listManyParkInfo(fastify: FastifyInstance) {
                         }
                     });
 
-                    console.log(`Fetching events for park id: ${park.id}`);
+
                     const events = await prisma.event.findMany({
                         where: {
                             parkId: park.id
@@ -157,15 +157,12 @@ export async function listManyParkInfo(fastify: FastifyInstance) {
                     });
                 }
 
-                console.log('Successfully fetched all park data');
-                console.log('Results:', JSON.stringify(results, null, 2));
-
                 // Test serialization
                 try {
                     const serializedResults = JSON.stringify(results);
-                    console.log('Serialized Results:', serializedResults);
+
                 } catch (serializationError) {
-                    console.error('Serialization Error:', serializationError);
+
                     return reply.code(500).send({ message: 'Erro na serialização dos dados' });
                 }
 

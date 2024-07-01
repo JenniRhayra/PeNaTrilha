@@ -31,6 +31,18 @@ import { updateParkVisit } from './routes/user/update-park-visit'
 import { listEventById } from './routes/park/list-event-by-id'
 import { getGuideProfile } from './routes/guide/get-guide-profile'
 import { listParkVisit } from './routes/user/list-park-visit'
+import { getManagerProfile } from './routes/manager/get-manager-profile'
+import { getUserProfile } from './routes/user/get-user-profile'
+import { inativeUser } from './routes/user/inative-user'
+import { listManyActivityById } from './routes/park/list-many-activity-by-id'
+import { deleteActivity } from './routes/park/delete-activity'
+import { updateActivity } from './routes/park/update-activity'
+import { createActivity } from './routes/park/create-activity'
+import { listManyEventById } from './routes/park/list-many-events-by-id'
+import { listManyGoodPracticeById } from './routes/park/list-many-good-practice-by-id'
+import { listGuideByPark } from './routes/guide/list-guide-by-park'
+import { approveGuide } from './routes/manager/approve-guide'
+
 
 const app = fastify({ logger: false, bodyLimit: 90485760, maxParamLength: 90000 }).withTypeProvider<ZodTypeProvider>()
 app.setSerializerCompiler(serializerCompiler)
@@ -63,7 +75,9 @@ app.register(getProfile)
 
 // USER
 app.register(createUser)
+app.register(getUserProfile)
 app.register(findParkVisit)
+app.register(inativeUser)
 app.register(listParkVisit)
 app.register(listUsers)
 app.register(updateParkVisit)
@@ -72,20 +86,29 @@ app.register(updateParkVisit)
 app.register(createGuideAccount)
 app.register(getGuide)
 app.register(getGuideProfile)
+app.register(listGuideByPark)
 app.register(listLanguages)
 app.register(listSpeciality)
 
 //MANAGER
+app.register(approveGuide)
 app.register(createManagerAccount)
+app.register(getManagerProfile)
 
 //PARK
+app.register(createActivity)
 app.register(createParkAccount)
+app.register(deleteActivity)
 app.register(listActivityById)
 app.register(listEventById)
 app.register(listForestType)
+app.register(listManyActivityById)
+app.register(listManyEventById)
+app.register(listManyGoodPracticeById)
 app.register(listManyParkInfo)
 app.register(listManyParkInfoById)
 app.register(listPark)
+app.register(updateActivity)
 
 app.register(fastifySwaggerUi, {
   routePrefix: '/docs',

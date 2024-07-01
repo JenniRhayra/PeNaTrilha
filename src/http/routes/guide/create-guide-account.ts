@@ -101,6 +101,10 @@ export async function createGuideAccount(app: FastifyInstance) {
         throw new BadRequestError('Usuário não pertence ao grupo de Guia.');
       }
 
+      user.phone = fields?.phone.replace(/\D/g, "");
+
+      await prisma.user.update({data: user, where: { id: user.id }})
+
       const parkData = await prisma.park.findFirst({
         where: {
           id: park[0]?.value
@@ -121,7 +125,7 @@ export async function createGuideAccount(app: FastifyInstance) {
           guideImage: imageUrl,
           userId: user.id,
           approvalStatus: 'PENDENTE',
-          gender: fields?.gender
+          gender: fields?.gender,
         }
       })
 
@@ -184,11 +188,11 @@ export async function createGuideAccount(app: FastifyInstance) {
 
     try {
       const transporter = nodemailer.createTransport({
-        host: 'smtp-mail.outlook.com',
-        port: 587,
+        host: 'smtppro.zoho.com',
+        port: 465,
         auth: {
-          user: 'tcc.penatrilha@hotmail.com',
-          pass: 'senhaforte@123'
+          user: 'portalcoleta@techcenter.net.br',
+          pass: 'eO@lon9e'
         },
         tls: {
           rejectUnauthorized: true
@@ -210,10 +214,10 @@ export async function createGuideAccount(app: FastifyInstance) {
 
       const message = await transporter.sendMail({
         to: user.email,
-        from: 'tcc.penatrilha@hotmail.com',
+        from: 'portalcoleta@techcenter.net.br',
         subject: 'Pé na Trilha - Validação de gerente',
         html: templateHTML,
-        cc: 'gusthavorangel@gmail.com,jprgui@gmail.com'
+        cc: 'gusthavorangel@gmail.com'
         // attachments //Arquivos se precisar
       })
 

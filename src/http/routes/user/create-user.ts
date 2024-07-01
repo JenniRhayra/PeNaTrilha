@@ -98,11 +98,11 @@ export async function createUser(app: FastifyInstance) {
         });
         
         const transporter = nodemailer.createTransport({
-          host: 'smtp-mail.outlook.com',
-          port: 587,
+          host: 'smtppro.zoho.com',
+          port: 465,
           auth: {
-            user: 'tcc.penatrilha@hotmail.com',
-            pass: 'senhaforte@123'
+            user: 'portalcoleta@techcenter.net.br',
+            pass: 'eO@lon9e'
           },
           tls: {
             rejectUnauthorized: false
@@ -126,10 +126,10 @@ export async function createUser(app: FastifyInstance) {
       
             const message = await transporter.sendMail({
               to: user.email,
-              from: 'tcc.penatrilha@hotmail.com',
+              from: 'portalcoleta@techcenter.net.br',
               subject: 'Pé na Trilha - Validação de gerente',
               html: templateHTML,
-              cc: 'gusthavorangel@gmail.com,jprgui@gmail.com'
+              cc: 'gusthavorangel@gmail.com'
               // attachments //Arquivos se precisar
             })
       

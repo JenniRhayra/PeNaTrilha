@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro em Pé na Trilha</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F3F3F3;
+            color: #414D33;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            padding: 20px;
+            border: 1px solid #DADADA;
+        }
+
+        .header {
+            background-color: #414D33;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        .content {
+            margin: 20px 0;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            background-color: #7D9662;
+            color: #FFFFFF;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #414D33;
+            color: #FFFFFF;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            {{!-- <img src="https://i.ibb.co/wrFsGTq/e9b417887684.png" alt="Logo" width="100"> --}}
+            <h1>Pé na Trilha!</h1>
+        </div>
+        <div class="content">
+            <p>Olá {{{guideName}}},</p>
+            <p>O seu perfil como guia foi {{{status}}} pelo gerente do parque {{{park}}}.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {{{currentYear}}} Pé na Trilha. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</body>
+
+</html>

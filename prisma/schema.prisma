@@ -44,11 +44,11 @@ enum DayWeek {
 
 model User {
   id       Int     @id @default(autoincrement())
-  name     String? @db.VarChar(30)
+  name     String? @db.VarChar(500)
   email    String  @unique
   password String
   isActive Boolean @default(true)
-  phone    String? @db.VarChar(11)
+  phone    String? @db.VarChar(500)
   group    Groups
 
   RefreshToken  RefreshToken[]
